@@ -40,6 +40,7 @@ class _StockPageState extends State<StockPage> {
                   title: Text(stock.name, style: const TextStyle(color: Colors.white)),
                   subtitle: Text("Unit: ${stock.unit}", style: const TextStyle(color: Colors.white70)),
                   trailing: Text("${stock.quantity} ${stock.unit}", style: const TextStyle(color: Colors.white)),
+                  onTap: () => _showStockOptions(stock),
                 );
               },
             ),
@@ -52,6 +53,37 @@ class _StockPageState extends State<StockPage> {
         backgroundColor: Colors.white,
         tooltip: "Add Stock",
         child: const Icon(Icons.add, color: Colors.orange),
+      ),
+    );
+  }
+
+
+
+void _showStockOptions(StockItem stock) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.edit),
+            title: const Text("Edit"),
+            onTap: () async {
+              Navigator.pop(context);
+              await showEditStockDialog(context, stock);
+              setState(() {});
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.delete),
+            title: const Text("Delete"),
+            onTap: () async {
+              Navigator.pop(context);
+              final deleted = await confirmDeleteStock(context, stock);
+              if (deleted) setState(() {});
+            },
+          ),
+        ],
       ),
     );
   }

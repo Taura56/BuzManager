@@ -45,6 +45,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                   ),
                   trailing: Text("Ksh ${expense.amount.toStringAsFixed(2)}",
                       style: const TextStyle(color: Colors.white)),
+                      onTap: () => _showExpenseOptions(expense),
                 );
               },
             ),
@@ -60,4 +61,34 @@ class _ExpensesPageState extends State<ExpensesPage> {
       ),
     );
   }
+
+  void _showExpenseOptions(Expense expense) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.edit),
+            title: const Text("Edit"),
+            onTap: () async {
+              Navigator.pop(context);
+              await showEditExpenseDialog(context, expense);
+              setState(() {});
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.delete),
+            title: const Text("Delete"),
+            onTap: () async {
+              Navigator.pop(context);
+              final deleted = await confirmDeleteExpense(context, expense);
+              if (deleted) setState(() {});
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }
+

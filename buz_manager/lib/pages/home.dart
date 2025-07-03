@@ -48,14 +48,25 @@ void _loadData() {
   final salesBox = Hive.box<Sale>('salesBox');
   final expensesBox = Hive.box<Expense>('expensesBox');
 
-  final sales = salesBox.values.where((s) => s.businessName == widget.businessName);
-  final expenses = expensesBox.values.where((e) => e.businessName == widget.businessName);
+  final today = DateTime.now();
+  final sales = salesBox.values.where((s) =>
+      s.businessName == widget.businessName &&
+      s.date.year == today.year &&
+      s.date.month == today.month &&
+      s.date.day == today.day);
+
+  final expenses = expensesBox.values.where((e) =>
+      e.businessName == widget.businessName &&
+      e.date.year == today.year &&
+      e.date.month == today.month &&
+      e.date.day == today.day);
 
   setState(() {
     income = sales.fold(0.0, (sum, item) => sum + item.amount);
     expense = expenses.fold(0.0, (sum, item) => sum + item.amount);
   });
 }
+
 
 
   @override
@@ -130,7 +141,7 @@ void _loadData() {
 
           // Preview section (Inventory + Sell History)
           SizedBox(
-            height: 170,
+            height: 220,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

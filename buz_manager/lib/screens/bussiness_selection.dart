@@ -1,4 +1,5 @@
 import 'package:buz_manager/pages/home.dart';
+import 'package:buz_manager/screens/reusable_func.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:buz_manager/models/business_model.dart';
@@ -95,6 +96,7 @@ class _BuzSelectionState extends State<BuzSelection> {
               style: const TextStyle(color: Colors.white, fontSize: 20),
             ),
             onTap: () => _selectBusiness(biz.name),
+            onLongPress: () => _showBusinessOptions(biz),
           );
         },
       ),
@@ -105,5 +107,33 @@ class _BuzSelectionState extends State<BuzSelection> {
     ),
     );
 
+  }
+   void _showBusinessOptions(Business business) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.edit),
+            title: const Text("Edit"),
+            onTap: () async {
+              Navigator.pop(context);
+              await showEditBusinessDialog(context, business);
+              setState(() {});
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.delete),
+            title: const Text("Delete"),
+            onTap: () async {
+              Navigator.pop(context);
+              final deleted = await confirmDeleteBusiness(context, business);
+              if (deleted) setState(() {});
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

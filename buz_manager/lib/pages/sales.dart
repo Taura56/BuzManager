@@ -37,6 +37,7 @@ class _SalesPageState extends State<SalesPage> {
                   title: Text(sale.item),
                   subtitle: Text(DateFormat('yyyy-MM-dd – hh:mm a').format(sale.date)),
                   trailing: Text("Ksh ${sale.amount.toStringAsFixed(2)}"),
+                  onTap: () => _showSaleOptions(sale),
                 );
               },
             ),
@@ -54,4 +55,33 @@ class _SalesPageState extends State<SalesPage> {
       ),
     );
   }
+ void _showSaleOptions(Sale sale) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.edit),
+            title: const Text("Edit"),
+            onTap: () async {
+              Navigator.pop(context);
+              await showEditSaleDialog(context, sale);
+              setState(() {});
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.delete),
+            title: const Text("Delete"),
+            onTap: () async {
+              Navigator.pop(context);
+              final deleted = await confirmDeleteSale(context, sale);
+              if (deleted) setState(() {});
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }
+

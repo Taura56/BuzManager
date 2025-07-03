@@ -1,3 +1,4 @@
+import 'package:buz_manager/models/business_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:buz_manager/models/sale_model.dart';
@@ -229,4 +230,284 @@ Future<void> showAddStockDialog(BuildContext context, String businessName) {
 }
 
 
+//Edit Stock function
+Future<void> showEditStockDialog(BuildContext context, StockItem stock) async {
+  final nameController = TextEditingController(text: stock.name);
+  final quantityController = TextEditingController(text: stock.quantity.toString());
+  String selectedUnit = stock.unit;
 
+  return showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Text("Edit Stock"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(controller: nameController, decoration: const InputDecoration(labelText: "Item Name")),
+          TextField(
+            controller: quantityController,
+            decoration: const InputDecoration(labelText: "Quantity"),
+            keyboardType: TextInputType.number,
+          ),
+          DropdownButton<String>(
+            value: selectedUnit,
+            isExpanded: true,
+            items: ['pcs', 'kg', 'liters'].map((unit) {
+              return DropdownMenuItem(value: unit, child: Text(unit));
+            }).toList(),
+            onChanged: (value) {
+              if (value != null) selectedUnit = value;
+            },
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+        ElevatedButton(
+          onPressed: () {
+            stock.name = nameController.text.trim();
+            stock.quantity = int.tryParse(quantityController.text.trim()) ?? stock.quantity;
+            stock.unit = selectedUnit;
+            stock.save();
+            Navigator.pop(context);
+          },
+          child: const Text("Save"),
+        ),
+      ],
+    ),
+  );
+}
+
+//Delete Stock function
+Future<bool> confirmDeleteStock(BuildContext context, StockItem stock) async {
+  return await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("Delete Stock"),
+          content: Text("Are you sure you want to delete '${stock.name}'?"),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
+            ElevatedButton(
+              onPressed: () {
+                stock.delete();
+                Navigator.pop(context, true);
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text("Delete"),
+            ),
+          ],
+        ),
+      ) ??
+      false;
+}
+
+
+//Edit Sale Function
+Future<void> showEditSaleDialog(BuildContext context, Sale sale) async {
+  final itemController = TextEditingController(text: sale.item);
+  final amountController = TextEditingController(text: sale.amount.toString());
+
+  return showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Text("Edit Sale"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(controller: itemController, decoration: const InputDecoration(labelText: "Item")),
+          TextField(
+            controller: amountController,
+            decoration: const InputDecoration(labelText: "Amount"),
+            keyboardType: TextInputType.number,
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+        ElevatedButton(
+          onPressed: () {
+            sale.item = itemController.text.trim();
+            sale.amount = double.tryParse(amountController.text) ?? sale.amount;
+            sale.save();
+            Navigator.pop(context);
+          },
+          child: const Text("Save"),
+        ),
+      ],
+    ),
+  );
+}
+
+
+//Delete Sale Function
+Future<bool> confirmDeleteSale(BuildContext context, Sale sale) async {
+  return await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("Delete Sale"),
+          content: Text("Are you sure you want to delete '${sale.item}'?"),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
+            ElevatedButton(
+              onPressed: () {
+                sale.delete();
+                Navigator.pop(context, true);
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text("Delete"),
+            ),
+          ],
+        ),
+      ) ??
+      false;
+}
+
+
+
+//Edit Exxpense Function
+Future<void> showEditExpenseDialog(BuildContext context, Expense expense) async {
+  final reasonController = TextEditingController(text: expense.reason);
+  final amountController = TextEditingController(text: expense.amount.toString());
+
+  return showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Text("Edit Expense"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(controller: reasonController, decoration: const InputDecoration(labelText: "Reason")),
+          TextField(
+            controller: amountController,
+            decoration: const InputDecoration(labelText: "Amount"),
+            keyboardType: TextInputType.number,
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+        ElevatedButton(
+          onPressed: () {
+            expense.reason = reasonController.text.trim();
+            expense.amount = double.tryParse(amountController.text) ?? expense.amount;
+            expense.save();
+            Navigator.pop(context);
+          },
+          child: const Text("Save"),
+        ),
+      ],
+    ),
+  );
+}
+
+
+//Delete Expense Function
+Future<bool> confirmDeleteExpense(BuildContext context, Expense expense) async {
+  return await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("Delete Expense"),
+          content: Text("Are you sure you want to delete '${expense.reason}'?"),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
+            ElevatedButton(
+              onPressed: () {
+                expense.delete();
+                Navigator.pop(context, true);
+              },             
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text("Delete"),
+            ),
+          ],
+        ),
+      ) ??
+           false;
+}
+
+
+//Edit Bussiness Function
+Future<void> showEditBusinessDialog(BuildContext context, Business business) async {
+  final TextEditingController controller = TextEditingController(text: business.name);
+
+  await showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Text('Edit Business Name'),
+      content: TextField(
+        controller: controller,
+        decoration: const InputDecoration(hintText: "Enter new name"),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            final newName = controller.text.trim();
+            if (newName.isNotEmpty && newName != business.name) {
+              final oldName = business.name;
+
+              // Update the business name
+              business.name = newName;
+              business.save();
+
+              // Update all related sales, expenses, and stock items
+              final salesBox = Hive.box<Sale>('salesBox');
+              final expensesBox = Hive.box<Expense>('expensesBox');
+              final stockBox = Hive.box<StockItem>('stockBox');
+
+              for (var sale in salesBox.values) {
+                if (sale.businessName == oldName) {
+                  sale.businessName = newName;
+                  sale.save();
+                }
+              }
+
+              for (var expense in expensesBox.values) {
+                if (expense.businessName == oldName) {
+                  expense.businessName = newName;
+                  expense.save();
+                }
+              }
+
+              for (var stock in stockBox.values) {
+                if (stock.businessName == oldName) {
+                  stock.businessName = newName;
+                  stock.save();
+                }
+              }
+            }
+            Navigator.pop(context);
+          },
+          child: const Text('Save'),
+        ),
+      ],
+    ),
+  );
+}
+
+
+
+//Delete Business Function
+Future<bool> confirmDeleteBusiness(BuildContext context, Business business) async {
+  return await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("Delete Business"),
+          content: Text("Are you sure you want to delete '${business.name}'?"),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
+            ElevatedButton(
+              onPressed: () {
+                business.delete();
+                Navigator.pop(context, true);
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text("Delete"),
+            ),
+          ],
+        ),
+      ) ??
+      false;
+}
